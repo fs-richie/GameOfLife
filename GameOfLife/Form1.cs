@@ -42,17 +42,28 @@ namespace GameOfLife
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            // TODO: CountNeightbors Implementation
+            // CountNeightbors Implementation
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
-                    // int count = CountNeighbor;
-                    int count = CountNeighborsFinite(x, y);
+                    int count = 0;
+                    
+                    if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        // int count = CountNeighbor;
+                        count = CountNeighborsFinite(x, y);
+                    }
+                    else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        // int count = CountNeighbor;
+                        count = CountNeighborsFinite(x, y);
+                    }
 
                     // Apply the rules
+                    // Check to see if cell is still alive or not
                     bool breathing = false;
                     if (universe[x, y] == true)
                     {
@@ -62,14 +73,17 @@ namespace GameOfLife
                     // Turn in on/off the scratchPad
                     if (breathing == true)
                     {
+                        // Any living cell with less than 2 living neighbors dies in the next generation
                         if (count < 2)
                         {
                             scratchPad[x, y] = false;
                         }
+                        // Any living cell with 2 or 3 living neighbors will live on into the next generation
                         else if (count == 2 || count == 3)
                         {
                             scratchPad[x, y] = true;
                         }
+                        // Any living cell with more than 3 living neighbors will die in the next generation
                         else if (count > 3)
                         {
                             scratchPad[x, y] = false;
@@ -77,20 +91,21 @@ namespace GameOfLife
                     }
                     else
                     {
+                        // Any dead cell with exactly 3 living neighbors will be born into the next generation
                         if (count == 3)
                         {
                             scratchPad[x, y] = true;
                         }
+                        // Otherwise, stay dead
                         else
                         {
                             scratchPad[x, y] = false;
                         }
                     }
-
                 }
             }
 
-            // TODO: Copy from scratchPad to universe & clear out previous copy
+            // Copy from scratchPad to universe & clear out previous copy
             bool[,] temp = universe;
             universe = scratchPad;
             scratchPad = temp;
@@ -101,7 +116,7 @@ namespace GameOfLife
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
 
-            // TODO: Invalidate
+            // Invalidate
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
         }
@@ -169,19 +184,82 @@ namespace GameOfLife
 
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-
-                    // Neighbor Text
+                    
+                    /*
+                    // CountNeighbor Text
                     Font font = new Font("Arial", (cellRect.Height/2));
 
                     StringFormat stringFormat = new StringFormat();
                     stringFormat.Alignment = StringAlignment.Center;
                     stringFormat.LineAlignment = StringAlignment.Center;
 
-                    int neighbors = CountNeighborsFinite(x, y);
+                    int neighbors = 0;
+
+                    if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        neighbors = CountNeighborsFinite(x, y);
+                    }
+                    else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        neighbors = CountNeighborsTorodial(x, y);
+                    }
 
                     if (neighbors > 0)
                     {
                         e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Black, cellRect, stringFormat);
+                    }
+                    */
+                }
+            }
+
+            // CountNeighbor Text
+            // Iterate through the universe in the y, top to bottom
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    // 'RectangleF' - Float ver. of the integer Rectangle
+                    // A rectangle to represent each cell in pixels
+                    RectangleF cellRect = Rectangle.Empty;
+                    cellRect.X = x * cellWidth;
+                    cellRect.Y = y * cellHeight;
+                    cellRect.Width = cellWidth;
+                    cellRect.Height = cellHeight;
+
+                    // CountNeighbor Font and Size
+                    Font font = new Font("Arial", (cellRect.Height/2));
+
+                    // CountNeighbor Alignment
+                    StringFormat stringFormat = new StringFormat();
+                    stringFormat.Alignment = StringAlignment.Center;
+                    stringFormat.LineAlignment = StringAlignment.Center;
+
+                    int neighbors = 0;
+
+                    // Determines if NeighborCount is Finite or Torodial
+                    if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        neighbors = CountNeighborsFinite(x, y);
+                    }
+                    else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
+                    {
+                        neighbors = CountNeighborsTorodial(x, y);
+                    }
+
+                    // Draws the NeighborCount into the cell as long as the count is greater than 0
+                    if (neighbors > 0)
+                    {
+                        // If count is 2 or 3, text's color is Green
+                        if (neighbors == 2 || neighbors == 3)
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.ForestGreen, cellRect, stringFormat);
+                        }
+                        // Otherwise, text's color is Red
+                        else
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
+                        }
                     }
                 }
             }
@@ -248,6 +326,60 @@ namespace GameOfLife
             return count;
         }
 
+        private int CountNeighborsTorodial(int x, int y)
+        {
+            int count = 0;
+            int xLen = universe.GetLength(0);
+            int yLen = universe.GetLength(1);
+
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                    int xCheck = x + xOffset;
+                    int yCheck = y + yOffset;
+
+                    // if xOffset and yOffset are both equal to 0 then continue
+                    if (xOffset == 0 && yOffset == 0) continue;
+
+                    // if xCheck is less than 0 then set to xLen - 1
+                    if (xCheck < 0) xCheck = xLen - 1;
+                    // if yCheck is less than 0 then set to yLen - 1
+                    if (yCheck < 0) yCheck = yLen - 1;
+                    // if xCheck is greater than or equal too xLen then set to 0
+                    if (xCheck >= xLen) xCheck = 0;
+                    // if yCheck is greater than or equal too yLen then set to 0
+                    if (yCheck >= yLen) yCheck = 0;
+
+                    if (universe[xCheck, yCheck] == true) count++;
+                }
+            }
+
+            return count;
+        }
+
+        private void ResetUniverse()
+        {
+            // Iterate through the universe in the y, top to bottom
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    universe[x, y] = false;
+                }
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+
+            // Reset generations back to 0
+            generations = 0;
+
+            // Update status strip generations
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+        }
+
         // Close Program when clicking on Exit under File
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -271,7 +403,31 @@ namespace GameOfLife
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ResetUniverse();
+        }
 
+        private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                finiteToolStripMenuItem.CheckState = CheckState.Unchecked;
+                toroidalToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                toroidalToolStripMenuItem.CheckState = CheckState.Unchecked;
+                finiteToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
         }
     }
 }
