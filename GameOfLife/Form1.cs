@@ -429,5 +429,11 @@ namespace GameOfLife
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
         }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
     }
 }
