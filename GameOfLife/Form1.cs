@@ -15,6 +15,9 @@ namespace GameOfLife
         // The universe array
         bool[,] universe = new bool[40, 40];
 
+        // The scratchPad universe array
+        bool[,] scratchPad = new bool[40, 40];
+
         // Drawing colors
         Color gridColor = Color.LightGray;
         Color gridTColor = Color.Black;
@@ -39,7 +42,7 @@ namespace GameOfLife
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            // TODO: CountNeightbors
+            // TODO: CountNeightbors Implementation
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
@@ -47,19 +50,50 @@ namespace GameOfLife
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
                     // int count = CountNeighbor;
-
+                    int count = CountNeighborsFinite(x, y);
 
                     // Apply the rules
-
+                    bool breathing = false;
+                    if (universe[x, y] == true)
+                    {
+                        breathing = true;
+                    }
 
                     // Turn in on/off the scratchPad
-
+                    if (breathing == true)
+                    {
+                        if (count < 2)
+                        {
+                            scratchPad[x, y] = false;
+                        }
+                        else if (count == 2 || count == 3)
+                        {
+                            scratchPad[x, y] = true;
+                        }
+                        else if (count > 3)
+                        {
+                            scratchPad[x, y] = false;
+                        }
+                    }
+                    else
+                    {
+                        if (count == 3)
+                        {
+                            scratchPad[x, y] = true;
+                        }
+                        else
+                        {
+                            scratchPad[x, y] = false;
+                        }
+                    }
 
                 }
             }
 
             // TODO: Copy from scratchPad to universe & clear out previous copy
-
+            bool[,] temp = universe;
+            universe = scratchPad;
+            scratchPad = temp;
 
             // Increment generation count
             generations++;
@@ -68,8 +102,8 @@ namespace GameOfLife
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
 
             // TODO: Invalidate
-
-
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
         }
 
         // The event called by the timer every Interval milliseconds.
@@ -135,6 +169,20 @@ namespace GameOfLife
 
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+
+                    // Neighbor Text
+                    Font font = new Font("Arial", (cellRect.Height/2));
+
+                    StringFormat stringFormat = new StringFormat();
+                    stringFormat.Alignment = StringAlignment.Center;
+                    stringFormat.LineAlignment = StringAlignment.Center;
+
+                    int neighbors = CountNeighborsFinite(x, y);
+
+                    if (neighbors > 0)
+                    {
+                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Black, cellRect, stringFormat);
+                    }
                 }
             }
 
@@ -167,6 +215,39 @@ namespace GameOfLife
             }
         }
 
+        // CountNeightbor - Finite
+        private int CountNeighborsFinite(int x, int y)
+        {
+            int count = 0;
+            int xLen = universe.GetLength(0);
+            int yLen = universe.GetLength(1);
+
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                    int xCheck = x + xOffset;
+                    int yCheck = y + yOffset;
+
+                    // if xOffset and yOffset are both equal to 0 then continue
+                    if (xOffset == 0 && yOffset == 0) continue;
+
+                    // if xCheck is less than 0 then continue
+                    if (xCheck < 0) continue;
+                    // if yCheck is less than 0 then continue
+                    if (yCheck < 0) continue;
+                    // if xCheck is greater than or equal to xLen then continue
+                    if (xCheck >= xLen) continue;
+                    // if yCheck is greater than or equal to yLen then continue
+                    if (yCheck >= yLen) continue;
+
+                    if (universe[xCheck, yCheck] == true) count++;
+                }
+            }
+
+            return count;
+        }
+
         // Close Program when clicking on Exit under File
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -188,5 +269,9 @@ namespace GameOfLife
             NextGeneration();
         }
 
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
