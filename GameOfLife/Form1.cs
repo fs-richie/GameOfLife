@@ -435,5 +435,11 @@ namespace GameOfLife
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox aboutBox = new AboutBox();
+            aboutBox.Show();
+        }
     }
 }
