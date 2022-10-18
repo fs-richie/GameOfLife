@@ -49,7 +49,7 @@
             // 
             this.runToNumeric.Location = new System.Drawing.Point(80, 39);
             this.runToNumeric.Maximum = new decimal(new int[] {
-            1000,
+            2147483647,
             0,
             0,
             0});
@@ -79,6 +79,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "RunToDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "RunToDialog";
             ((System.ComponentModel.ISupportInitialize)(this.runToNumeric)).EndInit();
             this.ResumeLayout(false);

@@ -17,14 +17,10 @@ namespace GameOfLife
             InitializeComponent();
         }
 
-        public int GetNumber()
+        public int RunToNum
         {
-            return (int)runToNumeric.Value;
-        }
-
-        public void SetNumber(int number)
-        {
-            runToNumeric.Value = number;
+            get { return (int)runToNumeric.Value; }
+            set { runToNumeric.Value = value; }
         }
     }
 }

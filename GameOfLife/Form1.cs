@@ -12,14 +12,15 @@ namespace GameOfLife
 {
     public partial class Form1 : Form
     {
-        public static int uWidth = 40;
-        public static int uHeight = 40;
+        public static int uWidth = 10;
+        public static int uHeight = 10;
 
         // The universe array
-        //bool[,] universe = new bool[40, 40];
+        // bool[,] universe = new bool[20, 20];
         bool[,] universe = new bool[uWidth, uHeight];
 
         // The scratchPad universe array
+        // bool[,] scratchPad = new bool[20, 20];
         bool[,] scratchPad = new bool[uWidth, uHeight];
 
         // Drawing colors
@@ -645,20 +646,38 @@ namespace GameOfLife
         {
             RunToDialog dlgRunTo = new RunToDialog();
 
-            dlgRunTo.SetNumber(generations);
+            dlgRunTo.RunToNum = generations;
 
             if (DialogResult.OK == dlgRunTo.ShowDialog())
             {
-                int generation = dlgRunTo.GetNumber();
+                int genTarget = dlgRunTo.RunToNum;
 
                 do
                 {
                     NextGeneration();
                     graphicsPanel1.Invalidate();
                 }
-                while (generations < generation);
+                while (generations < genTarget);
 
             }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsDialog dlgOptions = new OptionsDialog();
+
+            dlgOptions.TimerMS = timer.Interval;
+            dlgOptions.UniverseWidth = uWidth;
+            dlgOptions.UniverseHeight = uHeight;
+
+            if (DialogResult.OK == dlgOptions.ShowDialog())
+            {
+                timer.Interval = dlgOptions.TimerMS;
+                uWidth = dlgOptions.UniverseWidth;
+                uHeight = dlgOptions.UniverseHeight;
+            }
+
+            graphicsPanel1.Invalidate();
         }
     }
 }
