@@ -12,13 +12,18 @@ namespace GameOfLife
 {
     public partial class Form1 : Form
     {
+        public static int uWidth = 40;
+        public static int uHeight = 40;
+
         // The universe array
-        bool[,] universe = new bool[40, 40];
+        //bool[,] universe = new bool[40, 40];
+        bool[,] universe = new bool[uWidth, uHeight];
 
         // The scratchPad universe array
-        bool[,] scratchPad = new bool[40, 40];
+        bool[,] scratchPad = new bool[uWidth, uHeight];
 
         // Drawing colors
+        Color bgColor = Color.White;
         Color gridColor = Color.LightGray;
         Color gridTColor = Color.Black;
         Color cellColor = Color.LightBlue;
@@ -136,28 +141,22 @@ namespace GameOfLife
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
 
-            /*
-            // Calculate the width and height of each cell in pixels
-            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
-            int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
-            */
-
             // A Pen for drawing the grid lines (color, width)
             Pen gridPen = new Pen(gridColor, 1);
 
-            // A Pen for drawing the grid lines (color, width)
+            // A Pen for drawing the 10x10 grid lines (color, width)
             Pen gridTPen = new Pen(gridTColor, 2);
+
+            // A Brush for filling the background (color)
+            Brush bgBrush = new SolidBrush(bgColor);
 
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
 
-            // Iterate through the universe in the y, top to bottom
-            for (int y = 0; y < universe.GetLength(1); y++)
+            // Fill Living Cells
+            for (int y = 0; y < universe.GetLength(1); y++)                     // Iterate through the universe in the y, top to bottom
             {
-                // Iterate through the universe in the x, left to right
-                for (int x = 0; x < universe.GetLength(0); x++)
+                for (int x = 0; x < universe.GetLength(0); x++)                 // Iterate through the universe in the x, left to right
                 {
                     // 'RectangleF' - Float ver. of the integer Rectangle
                     // A rectangle to represent each cell in pixels
@@ -166,99 +165,119 @@ namespace GameOfLife
                     cellRect.Y = y * cellHeight;
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
-
-                    /*
-                    // A rectangle to represent each cell in pixels
-                    Rectangle cellRect = Rectangle.Empty;
-                    cellRect.X = x * cellWidth;
-                    cellRect.Y = y * cellHeight;
-                    cellRect.Width = cellWidth;
-                    cellRect.Height = cellHeight;
-                    */
 
                     // Fill the cell with a brush if alive
                     if (universe[x, y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
                     }
-
-                    // Outline the cell with a pen
-                    e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-                    
-                    /*
-                    // CountNeighbor Text
-                    Font font = new Font("Arial", (cellRect.Height/2));
-
-                    StringFormat stringFormat = new StringFormat();
-                    stringFormat.Alignment = StringAlignment.Center;
-                    stringFormat.LineAlignment = StringAlignment.Center;
-
-                    int neighbors = 0;
-
-                    if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                    // Fill the cell with a brush if dead (background)
+                    else
                     {
-                        neighbors = CountNeighborsFinite(x, y);
+                        e.Graphics.FillRectangle(bgBrush, cellRect);
                     }
-                    else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
-                    {
-                        neighbors = CountNeighborsTorodial(x, y);
-                    }
-
-                    if (neighbors > 0)
-                    {
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Black, cellRect, stringFormat);
-                    }
-                    */
                 }
             }
 
-            // CountNeighbor Text
-            // Iterate through the universe in the y, top to bottom
-            for (int y = 0; y < universe.GetLength(1); y++)
+            // Set Show/Hide Status if grid toolstrip menu item is checked or not
+            if (gridToolStripMenuItem.CheckState == CheckState.Checked)
             {
-                // Iterate through the universe in the x, left to right
-                for (int x = 0; x < universe.GetLength(0); x++)
+                // Draw Grid
+                for (int y = 0; y < universe.GetLength(1); y++)                     // Iterate through the universe in the y, top to bottom
                 {
-                    // 'RectangleF' - Float ver. of the integer Rectangle
-                    // A rectangle to represent each cell in pixels
-                    RectangleF cellRect = Rectangle.Empty;
-                    cellRect.X = x * cellWidth;
-                    cellRect.Y = y * cellHeight;
-                    cellRect.Width = cellWidth;
-                    cellRect.Height = cellHeight;
-
-                    // CountNeighbor Font and Size
-                    Font font = new Font("Arial", (cellRect.Height/2));
-
-                    // CountNeighbor Alignment
-                    StringFormat stringFormat = new StringFormat();
-                    stringFormat.Alignment = StringAlignment.Center;
-                    stringFormat.LineAlignment = StringAlignment.Center;
-
-                    int neighbors = 0;
-
-                    // Determines if NeighborCount is Finite or Torodial
-                    if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                    for (int x = 0; x < universe.GetLength(0); x++)                 // Iterate through the universe in the x, left to right
                     {
-                        neighbors = CountNeighborsFinite(x, y);
+                        float horX = x * cellWidth; // Vertical Line Width
+                        float horY = cellHeight * universe.GetLength(1); // Height
+                        float vertY = y * cellHeight; // Horizontal Line Height
+                        float vertX = cellWidth * universe.GetLength(0); // Width
+
+                        // Draw Vertical Line
+                        e.Graphics.DrawLine(gridPen, horX, 0, horX, horY);
+                        // Draw Horizontal Line
+                        e.Graphics.DrawLine(gridPen, 0, vertY, vertX, vertY);
                     }
-                    else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
-                    {
-                        neighbors = CountNeighborsTorodial(x, y);
-                    }
+                }
+            }
 
-                    // Draws the NeighborCount into the cell as long as the count is greater than 0
-                    if (neighbors > 0)
+            // Set Show/Hide Status if grid 10x toolstrip menu item is checked or not
+            if (gridTenToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                // Draw 10x10 Grid
+                for (int y = 0; y < universe.GetLength(1) + 1; y++)                 // Iterate through the universe in the y, top to bottom
+                {
+                    for (int x = 0; x < universe.GetLength(0) + 1; x++)             // Iterate through the universe in the x, left to right
                     {
-                        // If count is 2 or 3, text's color is Green
-                        if (neighbors == 2 || neighbors == 3)
+                        float horX = x * cellWidth; // Vertical Line Width
+                        float horY = cellHeight * universe.GetLength(1); // Height
+                        float vertY = y * cellHeight; // Horizontal Line Height
+                        float vertX = cellWidth * universe.GetLength(0); // Width
+
+                        // Draw 10x10 Vertical Line
+                        if ((x % 10) == 0)
                         {
-                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.ForestGreen, cellRect, stringFormat);
+                            e.Graphics.DrawLine(gridTPen, horX, 0, horX, horY);
                         }
-                        // Otherwise, text's color is Red
-                        else
+                        // Draw 10x10 Horizontal Line
+                        if ((y % 10) == 0)
                         {
-                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
+                            e.Graphics.DrawLine(gridTPen, 0, vertY, vertX, vertY);
+                        }
+                    }
+                }
+            }
+
+            // Set Show/Hide Status if neighbor coount toolstrip menu item is checked or not
+            if (neighborCountToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                // CountNeighbor Text
+                // Iterate through the universe in the y, top to bottom
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        // 'RectangleF' - Float ver. of the integer Rectangle
+                        // A rectangle to represent each cell in pixels
+                        RectangleF cellRect = Rectangle.Empty;
+                        cellRect.X = x * cellWidth;
+                        cellRect.Y = y * cellHeight;
+                        cellRect.Width = cellWidth;
+                        cellRect.Height = cellHeight;
+
+                        // CountNeighbor Font and Size
+                        Font font = new Font("Arial", (cellRect.Height / 2));
+
+                        // CountNeighbor Alignment
+                        StringFormat stringFormat = new StringFormat();
+                        stringFormat.Alignment = StringAlignment.Center;
+                        stringFormat.LineAlignment = StringAlignment.Center;
+
+                        int neighbors = 0;
+
+                        // Determines if NeighborCount is Finite or Torodial
+                        if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                        {
+                            neighbors = CountNeighborsFinite(x, y);
+                        }
+                        else if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
+                        {
+                            neighbors = CountNeighborsTorodial(x, y);
+                        }
+
+                        // Draws the NeighborCount into the cell as long as the count is greater than 0
+                        if (neighbors > 0)
+                        {
+                            // If count is 2 or 3, text's color is Green
+                            if (neighbors == 2 || neighbors == 3)
+                            {
+                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.ForestGreen, cellRect, stringFormat);
+                            }
+                            // Otherwise, text's color is Red
+                            else
+                            {
+                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
+                            }
                         }
                     }
                 }
@@ -411,7 +430,9 @@ namespace GameOfLife
             if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 finiteToolStripMenuItem.CheckState = CheckState.Unchecked;
+                finiteToolStripMenuItem1.CheckState = CheckState.Unchecked;
                 toroidalToolStripMenuItem.CheckState = CheckState.Checked;
+                toroidalToolStripMenuItem1.CheckState = CheckState.Checked;
             }
 
             // Tell Windows you need to repaint
@@ -423,7 +444,9 @@ namespace GameOfLife
             if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 toroidalToolStripMenuItem.CheckState = CheckState.Unchecked;
+                toroidalToolStripMenuItem1.CheckState = CheckState.Unchecked;
                 finiteToolStripMenuItem.CheckState = CheckState.Checked;
+                finiteToolStripMenuItem1.CheckState = CheckState.Checked;
             }
 
             // Tell Windows you need to repaint
@@ -440,6 +463,187 @@ namespace GameOfLife
         {
             AboutBox aboutBox = new AboutBox();
             aboutBox.Show();
+        }
+
+        private void backColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlgBG = new ColorDialog();
+            dlgBG.Color = bgColor;
+
+            if (DialogResult.OK == dlgBG.ShowDialog())
+            {
+                bgColor = dlgBG.Color;
+
+                // Tell Windows you need to repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlgCell = new ColorDialog();
+            dlgCell.Color = cellColor;
+
+            if (DialogResult.OK == dlgCell.ShowDialog())
+            {
+                cellColor = dlgCell.Color;
+
+                // Tell Windows you need to repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlgGrid = new ColorDialog();
+            dlgGrid.Color = gridColor;
+
+            if (DialogResult.OK == dlgGrid.ShowDialog())
+            {
+                gridColor = dlgGrid.Color;
+
+                // Tell Windows you need to repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void gridX10ColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlgGridT = new ColorDialog();
+            dlgGridT.Color = gridTColor;
+
+            if (DialogResult.OK == dlgGridT.ShowDialog())
+            {
+                gridTColor = dlgGridT.Color;
+
+                // Tell Windows you need to repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (neighborCountToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                neighborCountToolStripMenuItem1.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                neighborCountToolStripMenuItem1.CheckState = CheckState.Unchecked;
+            }
+            
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gridToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                gridToolStripMenuItem1.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                gridToolStripMenuItem1.CheckState = CheckState.Unchecked;
+            }
+            
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridTenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gridTenToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                gridTenToolStripMenuItem1.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                gridTenToolStripMenuItem1.CheckState = CheckState.Unchecked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void hudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (hudToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                hudToolStripMenuItem1.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                hudToolStripMenuItem1.CheckState = CheckState.Unchecked;
+            }
+            
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void neighborCountToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (neighborCountToolStripMenuItem1.CheckState == CheckState.Checked)
+            {
+                neighborCountToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                neighborCountToolStripMenuItem.CheckState = CheckState.Unchecked;
+            }
+            
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (gridToolStripMenuItem1.CheckState == CheckState.Checked)
+            {
+                gridToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                gridToolStripMenuItem.CheckState = CheckState.Unchecked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void grid10xToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gridTenToolStripMenuItem1.CheckState == CheckState.Checked)
+            {
+                gridTenToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                gridTenToolStripMenuItem.CheckState = CheckState.Unchecked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void hudToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (hudToolStripMenuItem1.CheckState == CheckState.Checked)
+            {
+                hudToolStripMenuItem.CheckState = CheckState.Checked;
+            }
+            else
+            {
+                hudToolStripMenuItem.CheckState = CheckState.Unchecked;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -103,6 +103,16 @@ namespace GameOfLife.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Color {
+            get {
+                object obj = ResourceManager.GetObject("Color", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Current_Seed {
             get {
                 object obj = ResourceManager.GetObject("Current Seed", resourceCulture);
