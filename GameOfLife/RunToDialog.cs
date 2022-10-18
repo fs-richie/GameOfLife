@@ -17,6 +17,7 @@ namespace GameOfLife
             InitializeComponent();
         }
 
+        // Get and Set for Run To
         public int RunToNum
         {
             get { return (int)runToNumeric.Value; }

@@ -428,6 +428,7 @@ namespace GameOfLife
 
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Ensures that if Toroidal is checked, finite will be unchecked in the menus
             if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 finiteToolStripMenuItem.CheckState = CheckState.Unchecked;
@@ -442,6 +443,7 @@ namespace GameOfLife
 
         private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Ensures that if Finite is checked, toroidal will be unchecked in the menus
             if (toroidalToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 toroidalToolStripMenuItem.CheckState = CheckState.Unchecked;
@@ -463,16 +465,20 @@ namespace GameOfLife
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox aboutBox = new AboutBox();
+            // Display About Box
             aboutBox.Show();
         }
 
         private void backColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlgBG = new ColorDialog();
+           
+            // Set the Color for background (dead cell)
             dlgBG.Color = bgColor;
 
             if (DialogResult.OK == dlgBG.ShowDialog())
             {
+                // Get the Color for background (dead cell)
                 bgColor = dlgBG.Color;
 
                 // Tell Windows you need to repaint
@@ -483,10 +489,13 @@ namespace GameOfLife
         private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlgCell = new ColorDialog();
+            
+            // Set the Color for Living Cell
             dlgCell.Color = cellColor;
 
             if (DialogResult.OK == dlgCell.ShowDialog())
             {
+                // Get the Color for Living Cell
                 cellColor = dlgCell.Color;
 
                 // Tell Windows you need to repaint
@@ -497,10 +506,13 @@ namespace GameOfLife
         private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlgGrid = new ColorDialog();
+            
+            // Set the Color for Grid
             dlgGrid.Color = gridColor;
 
             if (DialogResult.OK == dlgGrid.ShowDialog())
             {
+                // Get the Color for Grid
                 gridColor = dlgGrid.Color;
 
                 // Tell Windows you need to repaint
@@ -511,10 +523,13 @@ namespace GameOfLife
         private void gridX10ColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlgGridT = new ColorDialog();
+            
+            // Set the Color for 10x Grid
             dlgGridT.Color = gridTColor;
 
             if (DialogResult.OK == dlgGridT.ShowDialog())
             {
+                // Get the Color for 10x Grid
                 gridTColor = dlgGridT.Color;
 
                 // Tell Windows you need to repaint
@@ -524,6 +539,7 @@ namespace GameOfLife
 
         private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (neighborCountToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 neighborCountToolStripMenuItem1.CheckState = CheckState.Checked;
@@ -539,6 +555,7 @@ namespace GameOfLife
 
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (gridToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 gridToolStripMenuItem1.CheckState = CheckState.Checked;
@@ -554,6 +571,7 @@ namespace GameOfLife
 
         private void gridTenToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (gridTenToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 gridTenToolStripMenuItem1.CheckState = CheckState.Checked;
@@ -569,6 +587,7 @@ namespace GameOfLife
 
         private void hudToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (hudToolStripMenuItem.CheckState == CheckState.Checked)
             {
                 hudToolStripMenuItem1.CheckState = CheckState.Checked;
@@ -584,6 +603,7 @@ namespace GameOfLife
 
         private void neighborCountToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (neighborCountToolStripMenuItem1.CheckState == CheckState.Checked)
             {
                 neighborCountToolStripMenuItem.CheckState = CheckState.Checked;
@@ -599,6 +619,7 @@ namespace GameOfLife
 
         private void gridToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (gridToolStripMenuItem1.CheckState == CheckState.Checked)
             {
                 gridToolStripMenuItem.CheckState = CheckState.Checked;
@@ -614,6 +635,7 @@ namespace GameOfLife
 
         private void grid10xToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (gridTenToolStripMenuItem1.CheckState == CheckState.Checked)
             {
                 gridTenToolStripMenuItem.CheckState = CheckState.Checked;
@@ -629,6 +651,7 @@ namespace GameOfLife
 
         private void hudToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            // Make sure both the Menu Strip and Context Menu's share the same check state
             if (hudToolStripMenuItem1.CheckState == CheckState.Checked)
             {
                 hudToolStripMenuItem.CheckState = CheckState.Checked;
@@ -646,15 +669,22 @@ namespace GameOfLife
         {
             RunToDialog dlgRunTo = new RunToDialog();
 
+            // Set the properties for the Run To Generation
             dlgRunTo.RunToNum = generations;
 
+            // If user clicks on the Accept Button, trigger the following:
             if (DialogResult.OK == dlgRunTo.ShowDialog())
             {
+                // Get the properties from the Run To Generation
                 int genTarget = dlgRunTo.RunToNum;
 
+                // Generate until the Run To Generation Target
                 do
                 {
+                    // Go to next generation
                     NextGeneration();
+
+                    // Tell Windows you need to repaint
                     graphicsPanel1.Invalidate();
                 }
                 while (generations < genTarget);
@@ -666,17 +696,21 @@ namespace GameOfLife
         {
             OptionsDialog dlgOptions = new OptionsDialog();
 
+            // Set the properties for the Options
             dlgOptions.TimerMS = timer.Interval;
             dlgOptions.UniverseWidth = uWidth;
             dlgOptions.UniverseHeight = uHeight;
 
+            // If user clicks on the Accept Button, trigger the following:
             if (DialogResult.OK == dlgOptions.ShowDialog())
             {
+                // Get the properties from the Options
                 timer.Interval = dlgOptions.TimerMS;
                 uWidth = dlgOptions.UniverseWidth;
                 uHeight = dlgOptions.UniverseHeight;
             }
 
+            // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
         }
     }
