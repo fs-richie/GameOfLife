@@ -643,7 +643,22 @@ namespace GameOfLife
 
         private void toToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            RunToDialog dlgRunTo = new RunToDialog();
 
+            dlgRunTo.SetNumber(generations);
+
+            if (DialogResult.OK == dlgRunTo.ShowDialog())
+            {
+                int generation = dlgRunTo.GetNumber();
+
+                do
+                {
+                    NextGeneration();
+                    graphicsPanel1.Invalidate();
+                }
+                while (generations < generation);
+
+            }
         }
     }
 }
