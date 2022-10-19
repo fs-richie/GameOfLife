@@ -119,8 +119,8 @@
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.resetToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.graphicsPanel1 = new GameOfLife.GraphicsPanel();
             this.importStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.graphicsPanel1 = new GameOfLife.GraphicsPanel();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -587,7 +587,7 @@
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(573, 25);
             this.toolStrip1.TabIndex = 1;
-            this.toolStrip1.Text = "toolStrip1";
+            this.toolStrip1.Text = "&Import";
             // 
             // newToolStripButton
             // 
@@ -946,6 +946,16 @@
             this.reloadToolStripMenuItem1.Text = "Reload";
             this.reloadToolStripMenuItem1.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 
+            // importStripButton1
+            // 
+            this.importStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.importStripButton1.Image = global::GameOfLife.Properties.Resources.Import;
+            this.importStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.importStripButton1.Name = "importStripButton1";
+            this.importStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.importStripButton1.Text = "toolStripButton1";
+            this.importStripButton1.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            // 
             // graphicsPanel1
             // 
             this.graphicsPanel1.AutoSize = true;
@@ -959,16 +969,6 @@
             this.graphicsPanel1.TabIndex = 3;
             this.graphicsPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicsPanel1_Paint);
             this.graphicsPanel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphicsPanel1_MouseClick);
-            // 
-            // importStripButton1
-            // 
-            this.importStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.importStripButton1.Image = global::GameOfLife.Properties.Resources.Import;
-            this.importStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.importStripButton1.Name = "importStripButton1";
-            this.importStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.importStripButton1.Text = "toolStripButton1";
-            this.importStripButton1.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // Form1
             // 
