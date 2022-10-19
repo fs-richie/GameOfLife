@@ -31,6 +31,7 @@
             this.runToAcceptButton = new System.Windows.Forms.Button();
             this.runToNumeric = new System.Windows.Forms.NumericUpDown();
             this.runToNumericLabel = new System.Windows.Forms.Label();
+            this.runToCancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.runToNumeric)).BeginInit();
             this.SuspendLayout();
             // 
@@ -38,7 +39,7 @@
             // 
             this.runToAcceptButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.runToAcceptButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.runToAcceptButton.Location = new System.Drawing.Point(90, 76);
+            this.runToAcceptButton.Location = new System.Drawing.Point(40, 75);
             this.runToAcceptButton.Name = "runToAcceptButton";
             this.runToAcceptButton.Size = new System.Drawing.Size(100, 23);
             this.runToAcceptButton.TabIndex = 0;
@@ -66,12 +67,24 @@
             this.runToNumericLabel.TabIndex = 2;
             this.runToNumericLabel.Text = "Run to generation";
             // 
+            // runToCancelButton
+            // 
+            this.runToCancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.runToCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.runToCancelButton.Location = new System.Drawing.Point(145, 75);
+            this.runToCancelButton.Name = "runToCancelButton";
+            this.runToCancelButton.Size = new System.Drawing.Size(100, 23);
+            this.runToCancelButton.TabIndex = 3;
+            this.runToCancelButton.Text = "Cancel";
+            this.runToCancelButton.UseVisualStyleBackColor = true;
+            // 
             // RunToDialog
             // 
             this.AcceptButton = this.runToAcceptButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 111);
+            this.Controls.Add(this.runToCancelButton);
             this.Controls.Add(this.runToNumericLabel);
             this.Controls.Add(this.runToNumeric);
             this.Controls.Add(this.runToAcceptButton);
@@ -92,5 +105,6 @@
         private System.Windows.Forms.Button runToAcceptButton;
         private System.Windows.Forms.NumericUpDown runToNumeric;
         private System.Windows.Forms.Label runToNumericLabel;
+        private System.Windows.Forms.Button runToCancelButton;
     }
 }

@@ -14,6 +14,8 @@ namespace GameOfLife
     {
         public static int uWidth;
         public static int uHeight;
+
+        public static int seed;
         
         // The universe array
         // bool[,] universe = new bool[20, 20];
@@ -413,6 +415,34 @@ namespace GameOfLife
             cellbgShareColor = Properties.Settings.Default.ShareColor;
         }
 
+        private void RandomizeUniverse()
+        {
+            Random rand = new Random(seed);
+
+            // Randomizes universe from Time
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    int randInt = rand.Next(0, 3); // Random numbers between 0 and 2
+
+                    // If random number is 0, cell is alive
+                    if (randInt == 0)
+                    {
+                        universe[x, y] = true;
+                    }
+                    // If random number is not 0, cell is dead
+                    else
+                    {
+                        universe[x, y] = false;
+                    }
+                }
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
         // Close Program when clicking on Exit under File
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -482,16 +512,33 @@ namespace GameOfLife
 
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SeedDialog dlgSeed = new SeedDialog();
 
+            // Sed the Seed
+            dlgSeed.Seed = seed;
+
+            if (DialogResult.OK == dlgSeed.ShowDialog())
+            {
+                // Get the Seed
+                seed = dlgSeed.Seed;
+
+                // Start the Randomization process with the new seed
+                RandomizeUniverse();
+            }
         }
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            // Start the Randomization process with current seed
+            RandomizeUniverse();
         }
         private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Set seed to "current" "time"
+            seed = Environment.TickCount;
 
+            // Start the Randomization process with the new seed
+            RandomizeUniverse();
         }
 
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
