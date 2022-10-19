@@ -13,10 +13,15 @@ namespace GameOfLife
 {
     public partial class Form1 : Form
     {
+        // Declare universe width
         public static int uWidth;
+        // Declare universe height
         public static int uHeight;
 
+        // Declare universe seed (Default is 1337)
         public static int seed = 1337;
+
+        // Declare how many cells are alive (Default is 0)
         public static int aliveCount = 0;
         
         // The universe array
