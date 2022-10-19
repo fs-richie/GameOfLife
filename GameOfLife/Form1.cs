@@ -15,7 +15,8 @@ namespace GameOfLife
         public static int uWidth;
         public static int uHeight;
 
-        public static int seed;
+        public static int seed = 1337;
+        public static int aliveCount = 0;
         
         // The universe array
         // bool[,] universe = new bool[20, 20];
@@ -128,7 +129,10 @@ namespace GameOfLife
             generations++;
 
             // Update status strip generations
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            toolStripStatusLabelGenerations.Text = "Generations: " + generations.ToString();
+            intervalStatusLabel.Text = "Interval: " + timer.Interval.ToString() + "ms";
+            aliveStatusLabel.Text = "Interval: " + aliveCount.ToString();
+            seedStatusLabel.Text = "Seed: " + seed.ToString();
 
             // Invalidate
             // Tell Windows you need to repaint
@@ -139,6 +143,9 @@ namespace GameOfLife
         private void Timer_Tick(object sender, EventArgs e)
         {
             NextGeneration();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
@@ -311,6 +318,8 @@ namespace GameOfLife
             cellBrush.Dispose();
         }
 
+
+
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
         {
             // If the left mouse button was clicked
@@ -399,7 +408,7 @@ namespace GameOfLife
 
             return count;
         }
-
+        
         private void ReadSettings()
         {
             uWidth = Properties.Settings.Default.UniverseWidth;
@@ -413,6 +422,22 @@ namespace GameOfLife
             gridColor = Properties.Settings.Default.GridColor;
             gridTColor = Properties.Settings.Default.GridTenColor;
             cellbgShareColor = Properties.Settings.Default.ShareColor;
+        }
+
+        private void CountAlive()
+        {
+            aliveCount = 0;
+            
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        aliveCount++;
+                    }
+                }
+            }
         }
 
         private void RandomizeUniverse()
@@ -462,6 +487,9 @@ namespace GameOfLife
         private void nextToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NextGeneration();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -475,6 +503,9 @@ namespace GameOfLife
 
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -486,6 +517,9 @@ namespace GameOfLife
 
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -497,6 +531,9 @@ namespace GameOfLife
 
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -508,6 +545,9 @@ namespace GameOfLife
 
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -525,20 +565,48 @@ namespace GameOfLife
                 // Start the Randomization process with the new seed
                 RandomizeUniverse();
             }
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Start the Randomization process with current seed
             RandomizeUniverse();
+
+            CountAlive();
         }
         private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Set seed to "current" "time"
-            seed = Environment.TickCount;
+            // seed = Environment.TickCount;
 
-            // Start the Randomization process with the new seed
-            RandomizeUniverse();
+            // Start the Randomization process
+            Random rand = new Random();
+
+            // Randomizes universe from Time
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    int randInt = rand.Next(0, 3); // Random numbers between 0 and 2
+
+                    // If random number is 0, cell is alive
+                    if (randInt == 0)
+                    {
+                        universe[x, y] = true;
+                    }
+                    // If random number is not 0, cell is dead
+                    else
+                    {
+                        universe[x, y] = false;
+                    }
+                }
+            }
+
+            // Count Alive Cells
+            CountAlive();
         }
 
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
