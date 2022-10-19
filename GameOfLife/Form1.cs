@@ -316,25 +316,24 @@ namespace GameOfLife
 
             if (hudToolStripMenuItem.CheckState == CheckState.Checked)
             {
-                /*
-                RectangleF hudRect = Rectangle.Empty;
-                hudRect.X = 0;
-                hudRect.Y = graphicsPanel1.ClientSize.Height - (graphicsPanel1.ClientSize.Height / 10);
-                hudRect.Width = (graphicsPanel1.ClientSize.Width / 10);
-                hudRect.Height = (graphicsPanel1.ClientSize.Height / 10);
-                */
-
+                // Get the height of the entire grid
                 float gridHeight = cellHeight * universe.GetLength(1);
+                // Set the x coord
                 float x = 10;
+                // Set the y coord
                 float y = gridHeight - (gridHeight / 5);
+                // Set the spacing between the strings
                 float spacing = (gridHeight / 50) + 5;
 
+                // Set the font for the hud, its size, and have it be bold
                 Font hudFont = new Font("Arial", (gridHeight / 50), FontStyle.Bold);
 
+                // Set the formatting
                 StringFormat hudFormat = new StringFormat();
                 hudFormat.Alignment = StringAlignment.Near;
                 hudFormat.LineAlignment = StringAlignment.Near;
 
+                // Draw the Strings for the HUD
                 e.Graphics.DrawString("Generations: " + generations.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
                 y += spacing;
                 e.Graphics.DrawString("Alive Cells: " + aliveCount.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
@@ -444,36 +443,44 @@ namespace GameOfLife
                     // if yCheck is greater than or equal too yLen then set to 0
                     if (yCheck >= yLen) yCheck = 0;
 
+                    // If alive, increase count
                     if (universe[xCheck, yCheck] == true) count++;
                 }
             }
 
+            // Return the count
             return count;
         }
         
+        // Read the Settings
         private void ReadSettings()
         {
-            uWidth = Properties.Settings.Default.UniverseWidth;
-            uHeight = Properties.Settings.Default.UniverseHeight;
-            universe = new bool[uWidth, uHeight];
-            scratchPad = new bool[uWidth, uHeight];
-            timer.Interval = Properties.Settings.Default.TimerMS;
-            graphicsPanel1.BackColor = Properties.Settings.Default.BackgroundColor;
-            deadCellColor = Properties.Settings.Default.DeadCellColor;
-            cellColor = Properties.Settings.Default.LivingCellColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            gridTColor = Properties.Settings.Default.GridTenColor;
-            cellbgShareColor = Properties.Settings.Default.ShareColor;
+            uWidth = Properties.Settings.Default.UniverseWidth; // Set the universe Width
+            uHeight = Properties.Settings.Default.UniverseHeight; // Set the universe Height
+            universe = new bool[uWidth, uHeight]; // Change the universe size
+            scratchPad = new bool[uWidth, uHeight]; // Change the scratchPad size
+            timer.Interval = Properties.Settings.Default.TimerMS; // Set the timer interval
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackgroundColor; // Set the background color
+            deadCellColor = Properties.Settings.Default.DeadCellColor; // Set the dead cell color
+            cellColor = Properties.Settings.Default.LivingCellColor; // Set the living cell color
+            gridColor = Properties.Settings.Default.GridColor; // Set the Grid color
+            gridTColor = Properties.Settings.Default.GridTenColor; // Set the Grid 10x color
+            cellbgShareColor = Properties.Settings.Default.ShareColor; // Set whether the background and dead cell share the same color
         }
 
+        // Count Alive Cells
         private void CountAlive()
         {
+            // Reset alive count to 0
             aliveCount = 0;
-            
+
+            // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
+                // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
+                    // If cell is alive, increase count by 1
                     if (universe[x, y] == true)
                     {
                         aliveCount++;
@@ -482,13 +489,16 @@ namespace GameOfLife
             }
         }
 
+        // Randomize the Universe
         private void RandomizeUniverse()
         {
             Random rand = new Random(seed);
 
             // Randomizes universe from Time
+            // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
+                // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
                     int randInt = rand.Next(0, 3); // Random numbers between 0 and 2
