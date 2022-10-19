@@ -12,22 +12,24 @@ namespace GameOfLife
 {
     public partial class Form1 : Form
     {
-        public static int uWidth = 10;
-        public static int uHeight = 10;
-
+        public static int uWidth;
+        public static int uHeight;
+        
         // The universe array
         // bool[,] universe = new bool[20, 20];
-        bool[,] universe = new bool[uWidth, uHeight];
+        bool[,] universe;
 
         // The scratchPad universe array
         // bool[,] scratchPad = new bool[20, 20];
-        bool[,] scratchPad = new bool[uWidth, uHeight];
+        bool[,] scratchPad;
 
         // Drawing colors
-        Color bgColor = Color.White;
-        Color gridColor = Color.LightGray;
-        Color gridTColor = Color.Black;
-        Color cellColor = Color.LightBlue;
+        Color gridColor;
+        Color gridTColor;
+        Color deadCellColor;
+        Color cellColor;
+
+        bool cellbgShareColor;
 
         // The Timer class
         Timer timer = new Timer();
@@ -43,6 +45,19 @@ namespace GameOfLife
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
+
+            // Setup the Settings
+            uWidth = Properties.Settings.Default.UniverseWidth;
+            uHeight = Properties.Settings.Default.UniverseHeight;
+            universe = new bool[uWidth, uHeight];
+            scratchPad = new bool[uWidth, uHeight];
+            timer.Interval = Properties.Settings.Default.TimerMS;
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackgroundColor;
+            deadCellColor = Properties.Settings.Default.DeadCellColor;
+            cellColor = Properties.Settings.Default.LivingCellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            gridTColor = Properties.Settings.Default.GridTenColor;
+            cellbgShareColor = Properties.Settings.Default.ShareColor;
         }
 
         // Calculate the next generation of cells
@@ -149,7 +164,7 @@ namespace GameOfLife
             Pen gridTPen = new Pen(gridTColor, 2);
 
             // A Brush for filling the background (color)
-            Brush bgBrush = new SolidBrush(bgColor);
+            Brush bgBrush = new SolidBrush(deadCellColor);
 
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
@@ -167,15 +182,29 @@ namespace GameOfLife
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
 
-                    // Fill the cell with a brush if alive
-                    if (universe[x, y] == true)
+                    // Checks to see if "Background and Dead Cells shar the same color" option is checked or not
+                    // If they don't
+                    if (cellbgShareColor == false)
                     {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
+                        // Fill the cell with a brush if alive
+                        if (universe[x, y] == true)
+                        {
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                        }
+                        // Fill the cell with a brush if dead (background)
+                        else
+                        {
+                            e.Graphics.FillRectangle(bgBrush, cellRect);
+                        }
                     }
-                    // Fill the cell with a brush if dead (background)
+                    // If they do
                     else
                     {
-                        e.Graphics.FillRectangle(bgBrush, cellRect);
+                        // Fill the cell with a brush if alive
+                        if (universe[x, y] == true)
+                        {
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                        }
                     }
                 }
             }
@@ -472,14 +501,28 @@ namespace GameOfLife
         private void backColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlgBG = new ColorDialog();
-           
+
             // Set the Color for background (dead cell)
-            dlgBG.Color = bgColor;
+            dlgBG.Color = graphicsPanel1.BackColor;
 
             if (DialogResult.OK == dlgBG.ShowDialog())
             {
                 // Get the Color for background (dead cell)
-                bgColor = dlgBG.Color;
+                graphicsPanel1.BackColor = dlgBG.Color;
+            }
+        }
+
+        private void deadCellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlgDeadCell = new ColorDialog();
+
+            // Set the Color for dead cell
+            dlgDeadCell.Color = deadCellColor;
+
+            if (DialogResult.OK == dlgDeadCell.ShowDialog())
+            {
+                // Get the Color for background (dead cell)
+                deadCellColor = dlgDeadCell.Color;
 
                 // Tell Windows you need to repaint
                 graphicsPanel1.Invalidate();
@@ -700,14 +743,41 @@ namespace GameOfLife
             dlgOptions.TimerMS = timer.Interval;
             dlgOptions.UniverseWidth = uWidth;
             dlgOptions.UniverseHeight = uHeight;
+            dlgOptions.ColorShare = cellbgShareColor;
 
             // If user clicks on the Accept Button, trigger the following:
             if (DialogResult.OK == dlgOptions.ShowDialog())
             {
-                // Get the properties from the Options
+                // Get the timer properties from the Options
                 timer.Interval = dlgOptions.TimerMS;
+
+                // Get the universe width and height properties from the Options
                 uWidth = dlgOptions.UniverseWidth;
                 uHeight = dlgOptions.UniverseHeight;
+
+                // Apply the new universe width and height
+                // First, reset the universe
+                // Iterate through the universe in the y, top to bottom
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        // Clears out the cells
+                        universe[x, y] = false;
+                    }
+                }
+
+                // Create the new universe with the new width and height
+                universe = new bool[uWidth, uHeight];
+                scratchPad = new bool[uWidth, uHeight];
+
+                // Get the Color Share properties form the Options
+                cellbgShareColor = dlgOptions.ColorShare;
+
+                // Disables/Enables the Dead Cell Color Menu Item based on whether or not the option is checked or not
+                deadCellColorToolStripMenuItem.Enabled = !dlgOptions.ColorShare;
+                deadCellColorToolStripMenuItem1.Enabled = !dlgOptions.ColorShare;
             }
 
             // Tell Windows you need to repaint

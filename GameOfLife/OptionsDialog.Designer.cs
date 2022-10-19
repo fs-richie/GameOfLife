@@ -36,6 +36,7 @@
             this.timerOptionsLabel = new System.Windows.Forms.Label();
             this.cellWidthOptionsLabel = new System.Windows.Forms.Label();
             this.cellHeightOptionsLabel = new System.Windows.Forms.Label();
+            this.colorOptionsCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.timerOptionsNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellWidthOptionsNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellHeightOptionsNumeric)).BeginInit();
@@ -124,6 +125,17 @@
             this.cellHeightOptionsLabel.TabIndex = 7;
             this.cellHeightOptionsLabel.Text = "Height of Universe in Cells";
             // 
+            // colorOptionsCheckBox
+            // 
+            this.colorOptionsCheckBox.AutoSize = true;
+            this.colorOptionsCheckBox.Location = new System.Drawing.Point(60, 140);
+            this.colorOptionsCheckBox.Name = "colorOptionsCheckBox";
+            this.colorOptionsCheckBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.colorOptionsCheckBox.Size = new System.Drawing.Size(260, 17);
+            this.colorOptionsCheckBox.TabIndex = 8;
+            this.colorOptionsCheckBox.Text = "Background and Dead Cells share the same color";
+            this.colorOptionsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this.optionsAcceptButton;
@@ -131,6 +143,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.optionsCancelButton;
             this.ClientSize = new System.Drawing.Size(384, 211);
+            this.Controls.Add(this.colorOptionsCheckBox);
             this.Controls.Add(this.cellHeightOptionsLabel);
             this.Controls.Add(this.cellWidthOptionsLabel);
             this.Controls.Add(this.timerOptionsLabel);
@@ -163,5 +176,6 @@
         private System.Windows.Forms.Label timerOptionsLabel;
         private System.Windows.Forms.Label cellWidthOptionsLabel;
         private System.Windows.Forms.Label cellHeightOptionsLabel;
+        private System.Windows.Forms.CheckBox colorOptionsCheckBox;
     }
 }

@@ -35,5 +35,12 @@ namespace GameOfLife
             get { return (int)cellHeightOptionsNumeric.Value; }
             set { cellHeightOptionsNumeric.Value = value; }
         }
+
+        // Get and Set for "Background and Dead Cells share the same color" Option
+        public bool ColorShare
+        {
+            get { return colorOptionsCheckBox.Checked; }
+            set { colorOptionsCheckBox.Checked = value; }
+        }
     }
 }
