@@ -1087,6 +1087,58 @@ namespace GameOfLife
             graphicsPanel1.Invalidate();
         }
 
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlgOpen = new OpenFileDialog();
+            dlgOpen.Filter = "All Files|*.*|Cells|*.cells";
+            dlgOpen.FilterIndex = 2;
+
+            if (DialogResult.OK == dlgOpen.ShowDialog())
+            {
+                StreamReader openReader = new StreamReader(dlgOpen.FileName);
+
+                // Reset the file pointer back to the beginning of the file
+                openReader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                int cellRow = 0;
+
+                // Iterate through the file again, this time reading in the cells
+                while (!openReader.EndOfStream)
+                {
+                    // Read one row at a time
+                    string row = openReader.ReadLine();
+
+                    // If the row begins with '!' then it is a comment and should be ignored
+                    if (row.StartsWith("!")) { }
+                    else
+                    {
+                        // If the row is not a comment then it is a row of cells and needs to be iterated through
+                        for (int xPos = 0; xPos < row.Length; xPos++)
+                        {
+                            // if row[xPos] is a 'O' (capital O) then set the corresponding cell in the universe to alive
+                            if (row[xPos] == 'O')
+                            {
+                                universe[xPos, cellRow] = true;
+                            }
+                            // if row[xPos] is a '.' (period) then set the corresponding cell in the universe to dead
+                            else if (row[xPos] == '.')
+                            {
+                                universe[xPos, cellRow] = false;
+                            }
+                        }
+                    }
+
+                    cellRow++;
+                }
+
+                // Close the file
+                openReader.Close();
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Update Settings when applicatication is closing
