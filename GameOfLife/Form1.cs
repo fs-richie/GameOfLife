@@ -29,6 +29,7 @@ namespace GameOfLife
         Color deadCellColor;
         Color cellColor;
 
+        // Bool to see if background and dead cells share the same color
         bool cellbgShareColor;
 
         // The Timer class
@@ -46,18 +47,8 @@ namespace GameOfLife
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
 
-            // Setup the Settings
-            uWidth = Properties.Settings.Default.UniverseWidth;
-            uHeight = Properties.Settings.Default.UniverseHeight;
-            universe = new bool[uWidth, uHeight];
-            scratchPad = new bool[uWidth, uHeight];
-            timer.Interval = Properties.Settings.Default.TimerMS;
-            graphicsPanel1.BackColor = Properties.Settings.Default.BackgroundColor;
-            deadCellColor = Properties.Settings.Default.DeadCellColor;
-            cellColor = Properties.Settings.Default.LivingCellColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            gridTColor = Properties.Settings.Default.GridTenColor;
-            cellbgShareColor = Properties.Settings.Default.ShareColor;
+            // Setup with Settings (Reading)
+            ReadSettings();
         }
 
         // Calculate the next generation of cells
@@ -407,26 +398,19 @@ namespace GameOfLife
             return count;
         }
 
-        private void ResetUniverse()
+        private void ReadSettings()
         {
-            // Iterate through the universe in the y, top to bottom
-            for (int y = 0; y < universe.GetLength(1); y++)
-            {
-                // Iterate through the universe in the x, left to right
-                for (int x = 0; x < universe.GetLength(0); x++)
-                {
-                    universe[x, y] = false;
-                }
-            }
-
-            // Tell Windows you need to repaint
-            graphicsPanel1.Invalidate();
-
-            // Reset generations back to 0
-            generations = 0;
-
-            // Update status strip generations
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            uWidth = Properties.Settings.Default.UniverseWidth;
+            uHeight = Properties.Settings.Default.UniverseHeight;
+            universe = new bool[uWidth, uHeight];
+            scratchPad = new bool[uWidth, uHeight];
+            timer.Interval = Properties.Settings.Default.TimerMS;
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackgroundColor;
+            deadCellColor = Properties.Settings.Default.DeadCellColor;
+            cellColor = Properties.Settings.Default.LivingCellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            gridTColor = Properties.Settings.Default.GridTenColor;
+            cellbgShareColor = Properties.Settings.Default.ShareColor;
         }
 
         // Close Program when clicking on Exit under File
@@ -450,9 +434,64 @@ namespace GameOfLife
             NextGeneration();
         }
 
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Stops timer
+            timer.Stop();
+
+            // Clears/Empties current universe
+            universe = new bool[uWidth, uHeight];
+            scratchPad = new bool[uWidth, uHeight];
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {            
+            clearToolStripMenuItem_Click(sender, e);
+
+            // Reset generations back to 0
+            generations = 0;
+
+            // Update status strip generations
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+        }
+
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ResetUniverse();
+            Properties.Settings.Default.Reset();
+
+            // Read the properties from Settings
+            ReadSettings();
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reload();
+
+            // Read the properties from Settings
+            ReadSettings();
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -481,12 +520,6 @@ namespace GameOfLife
                 finiteToolStripMenuItem1.CheckState = CheckState.Checked;
             }
 
-            // Tell Windows you need to repaint
-            graphicsPanel1.Invalidate();
-        }
-
-        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
         }
@@ -755,19 +788,6 @@ namespace GameOfLife
                 uWidth = dlgOptions.UniverseWidth;
                 uHeight = dlgOptions.UniverseHeight;
 
-                // Apply the new universe width and height
-                // First, reset the universe
-                // Iterate through the universe in the y, top to bottom
-                for (int y = 0; y < universe.GetLength(1); y++)
-                {
-                    // Iterate through the universe in the x, left to right
-                    for (int x = 0; x < universe.GetLength(0); x++)
-                    {
-                        // Clears out the cells
-                        universe[x, y] = false;
-                    }
-                }
-
                 // Create the new universe with the new width and height
                 universe = new bool[uWidth, uHeight];
                 scratchPad = new bool[uWidth, uHeight];
@@ -782,6 +802,22 @@ namespace GameOfLife
 
             // Tell Windows you need to repaint
             graphicsPanel1.Invalidate();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Update Settings when applicatication is closing
+            Properties.Settings.Default.UniverseWidth = uWidth;
+            Properties.Settings.Default.UniverseHeight = uHeight;
+            Properties.Settings.Default.TimerMS = timer.Interval;
+            Properties.Settings.Default.BackgroundColor = graphicsPanel1.BackColor;
+            Properties.Settings.Default.DeadCellColor = deadCellColor;
+            Properties.Settings.Default.LivingCellColor = cellColor;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.GridTenColor = gridTColor;
+            Properties.Settings.Default.ShareColor = cellbgShareColor;
+
+            Properties.Settings.Default.Save();
         }
     }
 }
