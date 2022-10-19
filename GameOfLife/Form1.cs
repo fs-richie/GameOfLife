@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace GameOfLife
 {
@@ -131,7 +132,7 @@ namespace GameOfLife
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations: " + generations.ToString();
             intervalStatusLabel.Text = "Interval: " + timer.Interval.ToString() + "ms";
-            aliveStatusLabel.Text = "Interval: " + aliveCount.ToString();
+            aliveStatusLabel.Text = "Alive: " + aliveCount.ToString();
             seedStatusLabel.Text = "Seed: " + seed.ToString();
 
             // Invalidate
@@ -954,6 +955,132 @@ namespace GameOfLife
                 // Disables/Enables the Dead Cell Color Menu Item based on whether or not the option is checked or not
                 deadCellColorToolStripMenuItem.Enabled = !dlgOptions.ColorShare;
                 deadCellColorToolStripMenuItem1.Enabled = !dlgOptions.ColorShare;
+            }
+
+            // Tell Windows you need to repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlgSave = new SaveFileDialog();
+            dlgSave.Filter = "All Files|*.*|Cells|*.cells";
+            dlgSave.FilterIndex = 2;
+            dlgSave.DefaultExt = "cells";
+
+            if (DialogResult.OK == dlgSave.ShowDialog())
+            {
+                StreamWriter saveWriter = new StreamWriter(dlgSave.FileName);
+
+                // Iterate through the universe one row at a time
+                for (int y = 0; y < uHeight; y++)
+                {
+                    // Create a string to represent the current row
+                    String currentRow = String.Empty;
+
+                    // Iterate through the current row one cell at a time
+                    for (int x = 0; x < uWidth; x++)
+                    {
+                        // If the universe[x, y] is alive then appen 'O' (capital O) to the row string
+                        if (universe[x, y] == true)
+                        {
+                            currentRow += "O";
+                        }
+                        // Else if the universe[x, y] is dead then append '.' (period) to the row string
+                        else
+                        {
+                            currentRow += ".";
+                        }
+                    }
+
+                    // Once the current row has been read through and the string constructed then write it to the file using WriteLine
+                    saveWriter.WriteLine(currentRow);
+                }
+
+                // After all rows and columns have been written then close the file
+                saveWriter.Close();
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlgOpen = new OpenFileDialog();
+            dlgOpen.Filter = "All Files|*.*|Cells|*.cells";
+            dlgOpen.FilterIndex = 2;
+
+            if (DialogResult.OK == dlgOpen.ShowDialog())
+            {
+                StreamReader openReader = new StreamReader(dlgOpen.FileName);
+
+                // Create a couple variables to calculate the width and height of the data in the file
+                int maxWidth = 0;
+                int maxHeight = 0;
+
+                // Iterate through the file once to get its size
+                while (!openReader.EndOfStream)
+                {
+                    // Read one row at a time
+                    string row = openReader.ReadLine();
+
+                    // If the row begins with '!' then it is a comment and it should be ignored
+                    if (row.StartsWith("!")) { }
+                    // If the row is not a comment then it is a row of cells
+                    // Increment the maxHeight variable for each row read
+                    else
+                    {
+                        maxHeight++;
+
+                        // Get the length of the current row string and adjust the maxWidth variable if necessary
+                        if (row.Length >= maxWidth)
+                        {
+                            maxWidth = row.Length;
+                        }
+                    }
+                }
+
+                // Resize the current universe and scratchPad to the width and height of the file calculated above
+                uWidth = maxWidth;
+                uHeight = maxHeight;
+
+                universe = new bool[uWidth, uHeight];
+                scratchPad = new bool[uWidth, uHeight];
+
+                // Reset the file pointer back to the beginning of the file
+                openReader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                int cellRow = 0;
+
+                // Iterate through the file again, this time reading in the cells
+                while (!openReader.EndOfStream)
+                {
+                    // Read one row at a time
+                    string row = openReader.ReadLine();
+
+                    // If the row begins with '!' then it is a comment and should be ignored
+                    if (row.StartsWith("!")) { }
+                    else
+                    {
+                        // If the row is not a comment then it is a row of cells and needs to be iterated through
+                        for (int xPos = 0; xPos < row.Length; xPos++)
+                        {
+                            // if row[xPos] is a 'O' (capital O) then set the corresponding cell in the universe to alive
+                            if (row[xPos] == 'O')
+                            {
+                                universe[xPos, cellRow] = true;
+                            }
+                            // if row[xPos] is a '.' (period) then set the corresponding cell in the universe to dead
+                            else if (row[xPos] == '.')
+                            {
+                                universe[xPos, cellRow] = false;
+                            }
+                        }
+                    }
+
+                    cellRow++;
+                }
+
+                // Close the file
+                openReader.Close();
             }
 
             // Tell Windows you need to repaint
