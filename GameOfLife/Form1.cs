@@ -313,12 +313,53 @@ namespace GameOfLife
                 }
             }
 
+            if (hudToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                /*
+                RectangleF hudRect = Rectangle.Empty;
+                hudRect.X = 0;
+                hudRect.Y = graphicsPanel1.ClientSize.Height - (graphicsPanel1.ClientSize.Height / 10);
+                hudRect.Width = (graphicsPanel1.ClientSize.Width / 10);
+                hudRect.Height = (graphicsPanel1.ClientSize.Height / 10);
+                */
+
+                float gridHeight = cellHeight * universe.GetLength(1);
+                float x = 10;
+                float y = gridHeight - (gridHeight / 5);
+                float spacing = (gridHeight / 50) + 5;
+
+                Font hudFont = new Font("Arial", (gridHeight / 50), FontStyle.Bold);
+
+                StringFormat hudFormat = new StringFormat();
+                hudFormat.Alignment = StringAlignment.Near;
+                hudFormat.LineAlignment = StringAlignment.Near;
+
+                e.Graphics.DrawString("Generations: " + generations.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                y += spacing;
+                e.Graphics.DrawString("Alive Cells: " + aliveCount.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                y += spacing;
+                if (finiteToolStripMenuItem.CheckState == CheckState.Checked)
+                {
+                    e.Graphics.DrawString("Boundary Type: Finite", hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                    y += spacing;
+                }
+                else
+                {
+                    e.Graphics.DrawString("Boundary Type: Toroidal", hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                    y += spacing;
+                }
+                e.Graphics.DrawString("Interval: " + timer.Interval.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                y += spacing;
+                e.Graphics.DrawString("Universe Size: {Width = " + uWidth.ToString() + ", Height = " + uHeight.ToString() + "}", hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                y += spacing;
+                e.Graphics.DrawString("Seed: " + seed.ToString(), hudFont, Brushes.Red, new PointF(x, y), hudFormat);
+                y += spacing;
+            }
+
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
         }
-
-
 
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
         {
